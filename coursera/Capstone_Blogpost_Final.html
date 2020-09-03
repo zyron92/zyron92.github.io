@@ -57,7 +57,7 @@
  
 <p>For this project, we will use the shared data, which is the collision data provided by Seattle Police Department (SPD). The timeframe of the data based on the provided description is from 2004 to present. The dataset includes all types of collisions. For our purposes, we will only use collision data involving vehicles with other parties.</p>
 
-<p>A pandas profiling of the dataset has been generated and accessible via <a href="https://zyron92.github.io/coursera/ibm_applied_ds_capstone_profiling_final.html">this link.</a></p>
+<p>A pandas profiling of the dataset has been generated and accessible via <a href="https://zyron92.github.io/coursera/ibm_applied_ds_capstone_profiling_overall.html">this link.</a></p>
 
 <p>There are 38 attributes in this dataset, excluding the index. The attribute which is going to be our label or target variable is the severity code (“SEVERITYCODE”), as this variable will determine the severity of the car accident. The attribute of vehicles count (“VEHCOUNT”) will help us to determine traffic collisions involving vehicles (cars). The rest of the attributes will be further investigated, in order to determine the important features which contribute to human injury caused by car accident.</p>
 
@@ -67,75 +67,60 @@
 
  <h3>B. Methodology</h3> 
  
- <p>As a database, I used GitHub repository in my study. My master data which has the main components <em>...........</em> and <em>........</em> informations ...........</p> 
- 
- <div class="slate-resizable-image-embed slate-image-embed__resize-middle"> 
- </div> 
- 
- <p>I used python <strong>........</strong> library </p> 
- <div class="slate-resizable-image-embed slate-image-embed__resize-full-width"> 
- </div> 
+<p>First of all, we removed high cardinality, unique, high-missing-values attributes. Duplicate attributes are also removed. Some of the missing values have been imputed with suitable values. The geospatial attributes are ignored in this capstone as it requires a different approach. Dirty data (unexpected value) has also been replaced with the correct one.</p> 
 
- <p>In summary of this data <strong>43</strong> v...... Here is a merged table of .... and .....</p> 
- <div class="slate-resizable-image-embed slate-image-embed__resize-full-width"> 
- </div> 
+<p>We also have augmented our dataset to include weekend and daylight factors. This is done by transforming accident date into the mentioned attributes.</p> 
+
+<p>A second pandas-profiling has been generated on the latest dataset. It is accessible via <a href="https://zyron92.github.io/coursera/ibm_applied_ds_capstone_profiling_final.html">this link.</a></p> 
+
+<p>Another pandas-profiling[3] is generated for the newly prepared data. The data preparation part has reduced the number of attributes to 19 useful and important attributes. There is no more missing data in the dataset, neither duplicate columns. We have a total of 5 numerical attributes, and 14 categorical attributes.</p> 
  
- <p>We can see that ..........</p> 
- <div class="slate-resizable-image-embed slate-image-embed__resize-middle"> 
- </div> 
+<img src="img/pic1.png" alt="" />
  
- <p>In summary of this graph <strong>256</strong> .........</p> 
- <div class="slate-resizable-image-embed slate-image-embed__resize-full-width"> 
- </div> 
- 
- <ul> 
- <li>...........</li> 
- <li>...........</li> 
- </ul> 
- 
- <p>We can also examine that what is ...... Thus, histogram can help to visualization:</p> 
- <div class="slate-resizable-image-embed slate-image-embed__resize-middle"> 
- </div> 
- 
- <p>As it seems in above histogram, we can define the ranges as below:</p> 
- <ul> 
- <li>.........</li> 
- <li>.........</li> 
- </ul> 
- <p>One of my aim was also show the number of top 3 .......</p> 
- <div class="slate-resizable-image-embed slate-image-embed__resize-middle"> 
- </div> 
+<p>We could see that the attributes shown in the above image have a big number of value zero, which may not be useful for the machine learning model.</p> 
+
+<img src="img/pic2.png" alt="" />
+
+<p>Based on the horizontal bar graphs produced by the pandas-profiling, we could observe that there is a little number of car accidents during weekend and during night (after 6pm).</p> 
+
+<img src="img/pic3.png" alt="" />
+
+<p>Based on the correlation provided by the pandas-profiling, using the algorithm “Phik”, we could see that the target attribute of “SEVERITYCODE_INJURY” has high correlation with the attribute “COLLISIONTYPE”. It also has slightly high correlation with the attributes as follow, “SDOT_COLCODE”, “PEDROWNOTGRNT_ENC”, “HITPARKEDCAR_ENC”, “JUNCTIONTYPE” and “PEDCOUNT”. These are the attributes to be fit into the model.</p>
+
+<img src="img/pic4.png" alt="" />
+
+<p>For the highly correlated attribute of “COLLISIONTYPE”, the car accident involving parked car is the highest in number, followed by car accident involving angles, whereas the least being the head on type of car collision.</p>
+
+<p>Dataset has been split into training and testing dataset with a ratio of 70:30. For the model training part, we have adopted an auto classification model developed by H2O.ai (AutoML). </p>
+
+<p>This is a robust model, where it will fit the dataset into all available classification models such as “StackedEnsemble”,” XGBoost”, “GBM”, “Decision Tree”, “Random Forest” and “KNN”. From there, it will come out with the best classification model based on the metric that we have chosen, using “AUC” by default. </p>
+
+<p>We have specified the parameter “balance_classes” of H2O.ai in order to upsampling  our dataset to avoid problems related to imbalanced dataset. Furthermore, we have included cross-validation in our model with 5 folds, in order to prevent overfitting.</p>
  
  <!-- ################################## RESULTS ################################################### -->
 
  <h3>C. Results</h3> 
- <p>Let’s merge those new variables with ..... in our main <strong>master table</strong>.</p> 
- <div class="slate-resizable-image-embed slate-image-embed__resize-full-width"> 
- </div> 
- <p>.....</p> 
-  <div class="slate-resizable-image-embed slate-image-embed__resize-full-width">
- </div>
-<p>In summary section, ......</p> 
- <ul> 
- <li>......</li> 
- <li>.....</li> 
- <li>.....</li> 
- <li>Top 3 ......</li> 
- </ul> 
- <div class="slate-resizable-image-embed slate-image-embed__resize-full-width">
- </div>
+
+<img src="img/pic5.png" alt="" />
+
+<p>The total training time is 7min and 45s. The result shows us that the best model is “Stacked Ensemble All Models” with an AUC of 0.8036, followed by “Stacked Ensemble Best of Family” and “XGBoost” with AUC of 0.8032 and 0.8028 respectively. </p>
+
+<p>Looking into the best model, which is “Stacked Ensemble All Models, we could see that the max accuracy of the model is 76.21%, whereas the max precision is 90.99% and max recall is 100.00%.</p>
  
-  <!-- ################################## DISCUSSION ################################################### -->
- <h3>D. Discussion</h3> 
- <p>.....</p> 
+<img src="img/pic6.png" alt="" /> 
  
+<p>
+We are also able to retrieve important variables from H2O.ai model of XGBoost which is our third best model. We could see that the attribute of collision type, especially the value of “Parked Car”, is the most important variable to determine whether the car accident contributes to severity related human injury. This is followed by the attribute pedestrian count and pedestrian / cyclist count.</p>
+
+
   <!-- ################################## CONCLUSION ################################################### -->
- <h3>F. Conclusion</h3> 
- <p>...........</p> 
+ <h3>D. Conclusion</h3> 
+ <p>Based on the obtained result, we can conclude that the most effective way of reducing severity of car accident, is by focusing on the collision type of car/vehicles and the number of pedestrian / cyclist involved in the car accidents. The Seattle Police Department (SPD) and Government of Seattle could use this results by putting more surveillance camera near the pavement and the cycling lane where most of the pedestrian and cyclist are. Besides that, it is advisable to put surveillance camera in the parking area.  </p> 
  
   <!-- ################################## REFERENCES ################################################### -->
- <h3>G. References:</h3> 
+ <h3>E. References:</h3> 
  <ul> 
  <li>[1] <a href=https://www.driverknowledge.com/car-accident-statistics/ target=_blank rel="nofollow noopener">Car Accident Statistics</a></li> 
- <li>[2] <a href=https://zyron92.github.io/coursera/ibm_applied_ds_capstone_profiling_final.html target=_blank rel="nofollow noopener">Overall Pandas Profiling</a></li>  
+ <li>[2] <a href=https://zyron92.github.io/coursera/ibm_applied_ds_capstone_profiling_overall.html target=_blank rel="nofollow noopener">Overall Pandas Profiling</a></li>
+  <li>[2] <a href=https://zyron92.github.io/coursera/ibm_applied_ds_capstone_profiling_final.html target=_blank rel="nofollow noopener">Final Pandas Profiling</a></li>  
  </ul>
